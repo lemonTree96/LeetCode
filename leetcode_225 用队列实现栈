@@ -1,0 +1,128 @@
+/*用队列实现栈通常有三种方式：
+  1. 利用两个队列:
+     (1).入栈直接将数据放入队列. 
+     (2).出栈时添加一个临时队列helper，将q1队列的前n-1个数据，入队到helper中，然后弹出q1的最后一个元素,再将q1与入队到helper中交换
+*/     
+class MyStack {
+public:
+    /** Initialize your data structure here. */
+    queue<int> que;
+    queue<int> helper;  //临时辅助队列
+    int temp;
+    MyStack() {
+
+    }
+    /** Push element x onto stack. */
+    void push(int x) {
+        que.push(x);     //压入(push)直接将数据入队q1
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        while(que.size()>1){      //将q1队列中前n-1个数据，入队到q2中
+            int temp=que.front();
+            helper.push(temp);
+            que.pop();
+        }
+        int ans=que.front();  
+        que.pop();	 //弹出q1的最后一个元素
+        queue<int> temp=helper;
+        helper=que;
+        que=temp;   //将q1与q2交换
+        return ans;
+        
+    }
+    /** Get the top element. */
+    int top() {
+        while(que.size()>1){
+            temp=que.front();
+            helper.push(temp);
+            que.pop();
+        }
+        int ans=que.front();
+        helper.push(ans);
+        que.pop();
+        queue<int> temp=helper;
+        helper=que;
+        que=temp;
+        return ans;
+    }   
+};
+/*
+  2. 利用两个队列:
+     (1).入栈让每一个新元素从helper入队，同时把这个元素作为栈顶元素保存。当q1非空（也就是栈非空），
+   我们让q1中所有的元素全部出队，再将出队的元素从helper入队。
+     (2).出栈时直接将数据从队列q1当中弹出即可
+*/     
+class MyStack {
+public:
+    /** Initialize your data structure here. */
+    queue<int> que;
+    queue<int> helper;
+    int temp;
+    MyStack() {
+
+    }  
+    /** Push element x onto stack. */
+    void push(int x) {
+        helper.push(x);
+        while(!que.empty()){   //当 `q1` 非空（也就是栈非空），我们让 `q1` 中所有的元素全部出队，再将出队的元素从 `q2` 入队。
+            int temp=que.front();
+            helper.push(temp);
+            que.pop();
+        }
+        queue<int> temp_q=helper;
+        helper=que;
+        que=temp_q;
+    }
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        int ans=que.front();   //直接从q1中出队
+        que.pop();
+        return ans;   
+    }
+    /** Get the top element. */
+    int top() {
+        int ans=que.front();
+        return ans;
+    }  
+};
+
+/*
+  3.利用一个队列：
+     (1).入栈时，每当入队一个新元素的时候，我们可以把队列的顺序反转过来.
+     (2).出栈时直接将数据从队列q1当中弹出即可
+  */
+class MyStack {
+public:
+    /** Initialize your data structure here. */
+    queue<int> que;
+    queue<int> helper;
+    int temp;
+    MyStack() {
+
+    }
+    /** Push element x onto stack. */
+    void push(int x) {
+        que.push(x);
+        int len=que.size();
+        while(len>1){   
+            int temp=que.front();   //每当入队一个新元素的时候，我们可以把队列的顺序反转过来
+            que.push(temp);
+            que.pop();
+            len--;
+        }
+    }
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        int ans=que.front();
+        que.pop();
+        return ans;
+        
+    }
+    /** Get the top element. */
+    int top() {
+        int ans=que.front();
+        return ans;
+    }
+};

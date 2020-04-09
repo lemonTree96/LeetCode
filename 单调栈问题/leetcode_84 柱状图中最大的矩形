@@ -1,0 +1,74 @@
+/*给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+    求在该柱状图中，能够勾勒出来的矩形的最大面积。 
+    
+           |
+          ||
+          ||
+          || |
+        | ||||
+        ||||||
+    如其中每个柱子的宽度为 1，给定的高度为 height[2,1,5,6,2,3]
+
+    思路：
+        题中要求矩形的最大面积，首先需要考虑几个问题？
+    （1）矩形的面积是如何确定的： 这个很明显，矩形的面积是由柱子
+        中最短的那个柱子决定的，那么问题就成了如何寻找最短的柱子。
+
+    （2）第i个位置的最短柱子是多少？
+         以i为中心时，向左找第一个小于 heights[i] 的位置 left_i;
+         向右找第一个小于 heights[i] 的位置 right_i，
+         即最大面积为 heights[i] * (right_i - left_i -1)
+*/
+    Thinking 1: 暴力法
+    int BF(vector<int>& heights){
+        int maxArea=0;
+        for(int i=0;i<heights.size();i++){
+            int h=INT_MAX;
+            for(int j=i;j<heights.size();j++){
+                h=min(h,heights[j]);
+                maxArea=max(maxArea,h*(j-i+1));
+            }
+        }
+        return maxArea;
+    }
+
+    Thinking 2： 利用单调栈
+    int stackArea(vector<int> &height){
+        if(height.empty())
+            return 0;
+        if(height.size()==1)
+            return height[0];
+        height.push_back(0);
+        int maxArea=0;
+        stack<int> sta;
+        sta.push(-1);
+        for(int i=0;i<height.size();i++){
+            while(sta.top()!=-1 && height[sta.top()]>height[i]){
+                int topTemp=sta.top();
+                sta.pop();
+                maxArea=max(maxArea,height[topTemp]*(i-sta.top()-1));
+            }
+            sta.push(i);
+        }
+        while(sta.top()!=-1){
+            int topTemp=sta.top();
+            sta.pop();
+            int area=height[topTemp]*(height.size()-sta.top()-1);
+            maxArea=max(maxArea,area);
+        }
+        return maxArea;
+    }
+
+    Thinking 3:分治法
+     int calculateArea(vector<int> &heights,int start,int end){
+        if(start>end)
+            return 0;
+        int minIndex=start;   //最小值索引
+        for(int i=start;i<=end;i++){
+            if(heights[minIndex]>heights[i])
+                minIndex=i;
+        }
+        return max(heights[minIndex]*(end-start+1),max(calculateArea(heights,start,minIndex-1),calculateArea(heights,minIndex+1,end)));
+    }
+
+

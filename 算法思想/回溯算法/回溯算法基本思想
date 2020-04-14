@@ -1,0 +1,59 @@
+/*
+    在8X8格的国际象棋上摆放八个皇后（棋子），使其不能互相攻击，
+    即任意两个皇后都不能处于同一行、同一列或同一斜线上。
+*/
+#include<iostream>
+#include<vector>
+using namespace std;
+
+//检查当前点x,y是否可以放棋子
+//由于当前点是从左到右进行遍历，所以，只需要判断其当前列，左上角和左下角即可
+bool check(int n,int x,int y,const vector<vector<int>> &board){
+    for(int i=0;i<n;i++){
+        if(board[i][y]==1)
+            return false;
+    }
+    for(int i=x-1,j=y-1; i>=0 && j>=0; i--,j--){
+        if(board[i][j]==1)
+            return false;
+    }
+    for(int i=x-1,j=y+1;i>=0 && j<n;i--,j++){
+        if(board[i][j]==1)
+            return false;
+    }
+    return true;
+}
+
+//i：当前行数
+//n: 总行数
+//cnt:方案数
+void QueenFind(int n,int i,vector<vector<int>> &board,int &cnt){
+    if(i>7){
+        cnt++;
+        cout<<"方案："<<cnt<<endl;
+        for(int pi=0;pi<n;pi++){
+            for(int pj=0;pj<n;pj++){
+                if(board[pi][pj]==1)
+                    cout<<" * ";
+                else    
+                    cout<<" O ";
+            }
+            cout<<endl;
+        }
+        return;
+    }
+    for(int m=0;m<n;m++){
+        if(check(n,i,m,board)){
+            board[i][m]=1;  //设置当前选择
+            QueenFind(n,i+1,board,cnt);  //下一选择
+            board[i][m]=0;   //撤销当前选择
+        }
+    }
+}
+int main(){
+    int cnt;
+    cin>>cnt;
+    vector<vector<int>> board(cnt,vector<int>(cnt));
+    int n=0;
+    QueenFind(cnt,0,board,n);
+}

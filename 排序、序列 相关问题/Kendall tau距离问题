@@ -1,0 +1,72 @@
+/*
+    1. Kendall tau距离的wiki定义如下：
+        The Kendall tau rank distance is a metric that counts the number of 
+      pairwise disagreements between two ranking lists. 
+      The larger the distance, the more dissimilar the two lists are.
+    
+    2.根据上述定义可以知道，Kendall tau距离就是两个排列之间的逆序数，它反映了两个排列的相似程度
+    求序列a,b的Kendall tau距离，就是求序列a,b之间的两个逆序。
+        如  a = { 0, 3, 1, 6, 2, 5, 4 }
+            b = { 1, 0, 3, 6, 4, 2, 5 }
+        则 a,b的逆序为{0,1},{3,1},{2,4},{5,4},故Kendall tau距离为4
+    
+    2. Kendall tau距离的求解：
+        (1).通过问题可以直观的发现，两个序列之间的逆序数可以看作是以a为序列的标准，b序列自身的逆序数。
+        (2).要以a为序列标准，需要提取a序列的索引，放入序列aindex[]中
+            即 aindex[a[i]]=i;
+        (3).以a序列的索引aindex去确定b序列的索引,放入bindex[]中
+            即 bindex[i]=aindex[b[i]]; 此时，bindex中索引的逆序数就是a,b之间的逆序数
+*/
+
+#include<iostream>
+#include<vector>
+using namespace std;
+void merge(vector<int> &vec, int left, int mid, int right,int &count) {
+	int i = left, j = mid + 1;
+	vector<int>temp(vec.size());
+	int k = 0;
+	while (i <= mid && j <= right) {
+		if (vec[i] <= vec[j])
+			temp[k++] = vec[i++];
+		else {
+			temp[k++] = vec[j++];
+			count += mid - i + 1;
+		}		
+	}
+	while (i <= mid)
+		temp[k++] = vec[i++];
+	while (j <= right)
+		temp[k++] = vec[j++];
+	k = 0;
+	while (left <= right)
+		vec[left++] = temp[k++];
+}
+void mergeSort(vector<int> &vec, int left, int right, int &count) {
+	if (left >= right)
+		return;
+	int mid = (right - left) / 2 + left;
+	mergeSort(vec, left, mid, count);
+	mergeSort(vec, mid + 1, right, count);
+	merge(vec, left, mid, right,count);
+}
+int main() {
+	vector<int> a;
+	vector<int>b;
+	int tempa, tempb;
+	while (cin >> tempa && tempa != -1) {
+		a.push_back(tempa);
+	}
+	while (cin >> tempb && tempb != -1) {
+		b.push_back(tempb);
+	}
+
+	vector<int> aindex(a.size());
+	vector<int> bindex(b.size());
+	for (int i = 0; i < a.size(); i++)
+		aindex[a[i]] = i;
+	for (int i = 0; i < b.size(); i++)
+		bindex[i] = aindex[b[i]];
+	int count = 0;
+	mergeSort(bindex, 0, bindex.size() - 1,count);
+	cout << count << endl;
+}

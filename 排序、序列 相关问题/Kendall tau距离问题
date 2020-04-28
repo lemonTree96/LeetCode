@@ -16,6 +16,7 @@
             即 aindex[a[i]]=i;
         (3).以a序列的索引aindex去确定b序列的索引,放入bindex[]中
             即 bindex[i]=aindex[b[i]]; 此时，bindex中索引的逆序数就是a,b之间的逆序数
+        (4).求解bindex序列中的逆序数，就是就是两者的距离
 */
 
 #include<iostream>

@@ -1,0 +1,59 @@
+/*
+        找到序列中第k小的元素=找到一个位置k的元素，使前面的元素
+    都比它小，后面的都比它大。
+
+    Thinking 1：
+        最容易想到的就是将序列排序，然后找到位置k即可，但这种方法
+    其时间复杂度最快为O(nlogn)。
+
+    Thinking 2：
+        我们发现，我们要找到第k小的元素，并不需要对其进行排序，我们只需要使
+    当前元素的前面的元素都比它小，后面的都比它大即可。这与快速排序的思想一致，
+    因此，我们可以利用快排进行位置的查找。时间复杂度为O(n)
+        当找到序列中第k小的元素后，特殊的，当k=n/2时，该元素为序列的中位数。
+
+*/
+#include<iostream>
+#include<vector>
+using namespace std;
+int parition(vector<int> &vec, int left, int right) {
+
+	int pivotKey = vec[left];
+	int i = left;
+	int j = right+1;
+	while (i < j) {
+		while (vec[++i] <= pivotKey) {
+			if (i >= j)
+				break;
+		}
+		while (vec[--j] >= pivotKey) {
+			if (i >= j)
+				break;
+		}
+		if (i >= j)
+			break; 
+		swap(vec[i], vec[j]);
+	}
+	swap(pivotKey, vec[j]);
+	return j;
+}
+int selectK(vector<int> &vec,int left,int right,int k) {
+	int pivotKey=parition(vec, left, right);
+	if (pivotKey == k) {
+		return vec[k];
+	}else if(pivotKey>k)
+		return selectK(vec, left, pivotKey - 1,k);
+	else
+		return selectK(vec, pivotKey + 1, right, k);
+}
+int main() {
+	int temp;
+	vector<int> vec;
+	while (cin >> temp && temp!=-1) {
+		vec.push_back(temp);
+	}
+	//int k;
+	//cin >> k;
+	cout << selectK(vec, 0, vec.size() - 1, (vec.size()-1)/2) << endl;
+	while (1);
+}
